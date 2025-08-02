@@ -16,7 +16,6 @@ const login = async (req, res) => {
     const [results] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
 
     if (results.length === 0) {
-      console.log(`error `);
       
       return res.status(404).json({
         success: false,
@@ -26,17 +25,9 @@ const login = async (req, res) => {
 
     const user = results[0];
     const isMatch = await bcrypt.compare(password, user.password);
-console.log(`Comparing:`, {
-  inputPassword: password,
-  storedHash: user.password,
-  matchResult: isMatch
-});
-
-console.log(`password here: ${user.password}`);
 
     
     if (!isMatch) {
-      console.log(`password did not match `);
       return res.status(401).json({
         success: false,
         message: '❌ Invalid credentials'
@@ -48,8 +39,6 @@ console.log(`password here: ${user.password}`);
       process.env.JWT_SECRET || 'jocode_secret_key',
       { expiresIn: '1d' }
     );
-
-    console.log(`✅ Logged in: ${email}`);
     res.status(200).json({
       success: true,
       message: `✅ Welcome back ${user.name}`,

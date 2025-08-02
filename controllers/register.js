@@ -6,7 +6,6 @@ const register = async (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
-    console.log('Validation failed - missing fields');
     return res.status(400).json({ 
       success: false,
       message: 'All fields are required' 
@@ -14,7 +13,6 @@ const register = async (req, res) => {
   }
 
   try {
-    console.log(`Attempting to register user: ${email}`);
 
     // Check if user exists
     const [existingUsers] = await pool.query(
@@ -23,7 +21,6 @@ const register = async (req, res) => {
     );
 
     if (existingUsers.length > 0) {
-      console.log('Registration failed - user already exists');
       return res.status(409).json({ 
         success: false,
         message: 'Email already registered' 
@@ -34,7 +31,6 @@ const register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     
 const hashPassword = await bcrypt.hash(password, salt);
-console.log('Generated hash:', hashPassword); 
 
     // Insert new user
     const [result] = await pool.query(
@@ -52,7 +48,6 @@ console.log('Generated hash:', hashPassword);
       { expiresIn: '1d' }
     );
 
-    console.log(`✅ User registered successfully: ${email}`);
     return res.status(201).json({ 
       success: true,
       message: 'Registration successful!',
